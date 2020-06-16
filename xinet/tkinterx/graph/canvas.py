@@ -85,7 +85,7 @@ class CanvasMeta(Canvas):
         :param kw: 'fill' not in kw
         '''
         x, y = position
-        kw.update({'width':width, 'tags': tags, 'fill': color})
+        kw.update({'width': width, 'tags': tags, 'fill': color})
         return self.create_graph('rectangle', [x, y, x, y], **kw)
 
 
