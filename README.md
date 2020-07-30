@@ -1,2 +1,11 @@
 # xinet
-发现与创造一些有趣的任何对象
+
+Discover and create anything interesting!
+
+## PyPI
+
+Provide PyPI support.
+
+```sh
+pip install xinet
+```
