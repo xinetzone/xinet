@@ -12,3 +12,4 @@ def run(window_type, *args, **kwargs):
     app.exec_()  # 当GUI产生退出信号时Python程序结束
     # 利用内置模块sys的exit()方法侦听GUI的退出信号，以便关闭Python程序。
     #sys.exit(app.exec_())  
+    

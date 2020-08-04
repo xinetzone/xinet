@@ -1,18 +1,22 @@
-from xinet import QtWidgets, QtGui, QtCore
+from xinet import QtWidgets, QtCore, RectItem
 from xinet.run_qt import run
 
 
 class MainWindow(QtWidgets.QGraphicsView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.resize(500, 400)
-        scene = QtWidgets.QGraphicsScene()  # 创建场景
-        font = QtGui.QFont("华文琥珀", 50, QtGui.QFont.Bold)
-        A = scene.addText("水", font)  # 在场景中添加文本
-        B = scene.addText("胡", font)  # 在场景中添加文本
-        A.setPos(0, 0)
-        B.setPos(80, 0)
-        self.setScene(scene)
+        # 设定视图尺寸
+        self.resize(600, 600)
+        # 创建场景
+        self.scene = QtWidgets.QGraphicsScene()
+        self.setSceneRect(0, 0, 600, 600)  # 设置场景的边界矩形，即可视化区域矩形
+        # x1, y1, w, h
+        self.item = RectItem(20, 25, 120, 120) # 可塑性矩形
+        self.scene.addItem(self.item)
+        self.scene.addItem(RectItem(200, 250, 120, 120))
+        # 设定视图的场景
+        self.setScene(self.scene)
+        self.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
 
 if __name__ == '__main__':
