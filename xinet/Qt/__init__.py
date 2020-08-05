@@ -1,1 +1,1 @@
-from .qt5 import QtCore, QtGui, QtWidgets, Signal, Slot, QtPrintSupport
+from .qt5 import QtCore, QtGui, QtWidgets, Signal, Slot, QtPrintSupport, QtQml

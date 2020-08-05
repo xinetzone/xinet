@@ -52,7 +52,7 @@ class RectItem(RectHandle):
         self.setAcceptHoverEvents(True)  # 设定为接受 hover 事件
         self.setFlags(QGraphicsItem.ItemIsSelectable |  # 设定矩形框为可选择的
                       QGraphicsItem.ItemSendsGeometryChanges |  # 追踪图元改变的信息
-                      QGraphicsItem.ItemIsFocusable |  # 可移动
+                      QGraphicsItem.ItemIsFocusable |  # 可聚焦
                       QGraphicsItem.ItemIsMovable)  # 可移动
         self.update_handles_pos()  # 初始化控制点
         self.reset_Ui()  # 初始化 UI 变量
