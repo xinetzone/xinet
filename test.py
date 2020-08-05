@@ -31,7 +31,11 @@ class EditorScene(QtWidgets.QGraphicsScene):
             self.setBackgroundBrush(QColor(0, 0, 200, 100))  # 默认背景颜色
         else:
             # 设置场景的边界矩形，即可视化区域矩形
-            self.setSceneRect(0, 0, self.photo.width(), self.photo.height())
+            _w = self.photo.width()
+            _h = self.photo.height()
+            w = _w if _w >500 else 500
+            h = _h if _h >500 else 500
+            self.setSceneRect(0, 0, w, h)
             painter.drawImage(0, 0, self.photo)
 
 
