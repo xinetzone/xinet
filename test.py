@@ -33,9 +33,10 @@ class EditorScene(QtWidgets.QGraphicsScene):
             # 设置场景的边界矩形，即可视化区域矩形
             _w = self.photo.width()
             _h = self.photo.height()
-            w = _w if _w >500 else 500
-            h = _h if _h >500 else 500
+            w = _w if _w >1920 else 1920
+            h = _h if _h >1080 else 1080
             self.setSceneRect(0, 0, w, h)
+            self.setBackgroundBrush(QColor(0, 0, 200, 30))  # 默认背景颜色
             painter.drawImage(0, 0, self.photo)
 
 
@@ -93,7 +94,7 @@ class MainWindow(QtWidgets.QGraphicsView):
             self.scene.addItem(item)
             self.update()
             self.endPos = event.pos()
-            #self.scene.photo = 'aaa.jpg'
+            self.scene.photo = 'aaa.jpg'
 
 
 if __name__ == '__main__':
