@@ -1,4 +1,6 @@
 from .. import QtWidgets, QtGui, QtCore
+
+
 Qt = QtCore.Qt
 QGraphicsItem = QtWidgets.QGraphicsItem
 QColor = QtGui.QColor
@@ -20,8 +22,8 @@ class RectHandle(QtWidgets.QGraphicsRectItem):
         6: Qt.SizeBDiagCursor,
         7: Qt.SizeHorCursor
     }
-    offset = 4.0  # 外边界框相对于内边界框的偏移量
-    min_size = 8 * offset  # 矩形框的最小尺寸
+    offset = 6.0  # 外边界框相对于内边界框的偏移量，也是控制点的大小
+    #min_size = 8 * offset  # 矩形框的最小尺寸
 
     def update_handles_pos(self):
         """
@@ -101,27 +103,26 @@ class RectItem(RectHandle):
         """
         当鼠标移到该 item（未按下）上时执行。
         """
-        if self.isSelected():
-            handle = self.handle_at(event.pos())
-            cursor = self.handle_cursors[handle] if handle in self.handles else Qt.ArrowCursor
-            self.setCursor(cursor)
         super().hoverMoveEvent(event)
+        handle = self.handle_at(event.pos())
+        cursor = self.handle_cursors[handle] if handle in self.handles else Qt.ArrowCursor
+        self.setCursor(cursor)
 
     def hoverLeaveEvent(self, event):
         """
         当鼠标离开该形状（未按下）上时执行。
         """
-        self.setCursor(Qt.ArrowCursor)  # 设定鼠标光标形状
         super().hoverLeaveEvent(event)
+        self.setCursor(Qt.ArrowCursor)  # 设定鼠标光标形状
 
     def mousePressEvent(self, event):
         """
         当在 item 上按下鼠标时执行。
         """
+        super().mousePressEvent(event)
         self.handleSelected = self.handle_at(event.pos())
         if self.handleSelected in self.handles:
             self.mousePressPos = event.pos()
-        super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         """
@@ -166,4 +167,3 @@ class RectItem(RectHandle):
             rect.setLeft(mousePos.x())
         self.setRect(rect)
         self.update_handles_pos()
-

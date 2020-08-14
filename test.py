@@ -1,101 +1,64 @@
-from xinet import QtWidgets, QtCore, QtGui, RectItem
+from pathlib import Path
+
+from xinet import QtWidgets, QtCore, QtGui, RectItem, Signal
 from xinet.run_qt import run
 
-Qt = QtCore.Qt
-QColor = QtGui.QColor
-QPen = QtGui.QPen
-QPainter = QtGui.QPainter
-QPoint = QtCore.QPoint
+
+QIcon = QtGui.QIcon
+QAction = QtWidgets.QAction
+QFileDialog = QtWidgets.QFileDialog
 
 
-class EditorScene(QtWidgets.QGraphicsScene):
-    def __init__(self, photo=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._photo = photo
-
-    @property
-    def photo(self):
-        if self._photo:
-            return QtGui.QImage(self._photo)
-        else:
-            return QtGui.QImage()
-
-    @photo.setter
-    def photo(self, photo_name):
-        self._photo = photo_name
-
-    def drawBackground(self, painter, rect):
-        '''切换图片背景'''
-        super().drawBackground(painter, rect)
-        if self.photo.isNull():
-            self.setBackgroundBrush(QColor(0, 0, 200, 100))  # 默认背景颜色
-        else:
-            # 设置场景的边界矩形，即可视化区域矩形
-            _w = self.photo.width()
-            _h = self.photo.height()
-            w = _w if _w >1920 else 1920
-            h = _h if _h >1080 else 1080
-            self.setSceneRect(0, 0, w, h)
-            self.setBackgroundBrush(QColor(0, 0, 200, 30))  # 默认背景颜色
-            painter.drawImage(0, 0, self.photo)
-
-
-class MainWindow(QtWidgets.QGraphicsView):
+class ImageToolMeta(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.init_Ui()
-        # 设定视图尺寸
-        self.resize(500, 500)
-        # 创建场景
-        self.scene = EditorScene('test.jpg')
-        # 设定视图的场景
-        self.setScene(self.scene)
-        self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
-        #
-        self.lastPos = QPoint()
-        self.endPos = QPoint()
 
     def init_Ui(self):
-        self.setViewportUpdateMode(self.FullViewportUpdate)  # 消除重影 移动重影
-        self.setDragMode(self.RubberBandDrag)  # 设置可以进行鼠标的拖拽选择
-        # 这里是左上角方式显示
-        self.setAlignment(Qt.AlignLeft |
-                          Qt.AlignTop)
-        # 设置渲染属性
-        self.setRenderHints(QPainter.Antialiasing |  # 抗锯齿
-                            QPainter.HighQualityAntialiasing |  # 高品质抗锯齿
-                            QPainter.TextAntialiasing |  # 文字抗锯齿
-                            QPainter.SmoothPixmapTransform)  # 使图元变换更加平滑
+        self.statusBar()
+        self.create_menubar()
+        self.setGeometry(300, 300, 300, 200)
+        self.setWindowTitle('Image Tool')
 
-    def mousePressEvent(self, event):
-        super().mousePressEvent(event)
-        # 鼠标左键按下
-        if event.button() == Qt.RightButton:
-            self.lastPos = event.pos()
-            self.endPos = self.lastPos
+    def create_quit_action(self):
+        # 创建一个图标、一个 exit 的标签和一个快捷键组合，都执行了一个动作
+        exitAct = QAction(QIcon('icons/quit.png'), '&Quit', self)
+        exitAct.setShortcut('Ctrl+Q')
+        # 创建了一个状态栏，当鼠标悬停在菜单栏的时候，能显示当前状态
+        exitAct.setStatusTip('Exit application')
+        # 当执行这个指定的动作时，就触发了一个事件。
+        ## 这个事件跟 QApplication 的 quit() 行为相关联，所以这个动作就能终止这个应用。
+        exitAct.triggered.connect(self.close)
+        return exitAct
 
-    def mouseMoveEvent(self, event):
-        super().mouseMoveEvent(event)
-        # 鼠标左键按下的同时移动鼠标
-        if event.buttons() and Qt.RightButton:
-            self.endPos = event.pos()
+    def create_open_action(self):
+        # 创建一个图标、一个 exit 的标签和一个快捷键组合，都执行了一个动作
+        act = QAction(QIcon('icons/open.png'), '&Open', self)
+        act.setShortcut('Ctrl+O')
+        # 创建了一个状态栏，当鼠标悬停在菜单栏的时候，能显示当前状态
+        act.setStatusTip('Open Image & Label file')
+        # 当执行这个指定的动作时，就触发了一个事件。
+        ## 这个事件跟 QApplication 的 quit() 行为相关联，所以这个动作就能终止这个应用。
+        act.triggered.connect(self.open_image)
+        return act
 
-    def mouseReleaseEvent(self, event):
-        super().mouseReleaseEvent(event)
-        # 鼠标左键释放
-        if event.button() == Qt.RightButton:
-            x = self.lastPos.x()
-            y = self.lastPos.y()
-            w = self.endPos.x() - x
-            h = self.endPos.y() - y
-            # 进行重新绘制
-            item = RectItem(x, y, w, h)  # 可塑性矩形
-            item.setToolTip('可塑性矩形')
-            self.scene.addItem(item)
-            self.update()
-            self.endPos = event.pos()
-            self.scene.photo = 'aaa.jpg'
+    def open_image(self):
+        caption = "Open image or label file"
+        dir_default = ""  # 默认打开目录
+        filter_file = "*.jpg;;*.png;;*.json;;All Files(*)"
+        name, imgType = QFileDialog.getOpenFileName(self, caption, dir_default, filter_file)
+        self.photo = Path(name)
+        print(name, imgType)
+
+    def create_menubar(self):
+        exitAct = self.create_quit_action()
+        openAct = self.create_open_action()
+        # 创建菜单栏
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(openAct)
+        fileMenu.addAction(exitAct)
 
 
 if __name__ == '__main__':
-    run(MainWindow)
+    run(ImageToolMeta)
