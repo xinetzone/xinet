@@ -1,4 +1,4 @@
-from .Qt.qt5 import QtWidgets #, QtCore
+from .Qt import QtWidgets #, QtCore
 
 
 def run(window_type, *args, **kwargs):
