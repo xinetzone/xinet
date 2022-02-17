@@ -43,9 +43,8 @@ class DrawMeta(GraphMeta):
                 width=2, tags='temp', dash=10, **kw))
 
     def finish_drawing(self, *event,  **kw):
-        if self.graph_type:
-            if self.record_bbox:
-                self.drawing(width=1, tags=None, **kw)
+        if self.graph_type and self.record_bbox:
+            self.drawing(width=1, tags=None, **kw)
         self.reset(event)
 
     def reset(self, *event):
@@ -80,8 +79,7 @@ class DrawRectangle(DrawMeta):
     def create_mask(self, size, alpha, fill):
         '''设置透明蒙版'''
         fill = self.master.winfo_rgb(fill) + (alpha,)
-        image = Image.new('RGBA', size, fill)
-        return image
+        return Image.new('RGBA', size, fill)
         
     def draw_mask(self, x1, y1, x2, y2):
         size = x2-x1, y2-y1
@@ -91,10 +89,8 @@ class DrawRectangle(DrawMeta):
         return self.create_image(x1, y1, image=self.rectangle_selector[-1], anchor='nw', tags='mask')
 
     def finish_drawing(self, *event,  **kw):
-        if self.graph_type:
-            if self.record_bbox:
-                graph_id = self.drawing(width=1, tags=None, **kw)
-                if graph_id:
-                    bbox = self.bbox(graph_id)
-                    mask = self.draw_mask(*bbox)
+        if self.graph_type and self.record_bbox:
+            if graph_id := self.drawing(width=1, tags=None, **kw):
+                bbox = self.bbox(graph_id)
+                mask = self.draw_mask(*bbox)
         self.reset(event)
